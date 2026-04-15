@@ -915,20 +915,20 @@ class ExportActionMixin(ExportMixin):
 
         form_type = self.get_export_form_class()
         formats = self.get_export_formats()
-        export_items = list(queryset.values_list("pk", flat=True))
+        select_across = request.POST.get("select_across") == "1"
         form = form_type(
             formats=formats,
             resources=self.get_export_resource_classes(request),
-            initial={"export_items": export_items},
         )
-        # selected items are to be stored as a hidden input on the form
-        form.fields["export_items"] = MultipleChoiceField(
-            widget=MultipleHiddenInput, required=False, choices=export_items
-        )
+        if not select_across:
+            export_items = list(queryset.values_list("pk", flat=True))
+            form.initial["export_items"] = export_items
+            form.fields["export_items"] = MultipleChoiceField(
+                widget=MultipleHiddenInput, required=False, choices=export_items
+            )
+        else:
+            form.fields.pop("export_items", None)
         context = self.init_request_context_data(request, form)
-
-        # this is necessary to render the FORM action correctly
-        # i.e. so the POST goes to the correct URL
         export_url = reverse(
             "%s:%s_%s_export"
             % (
