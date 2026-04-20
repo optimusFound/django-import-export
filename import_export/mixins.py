@@ -172,6 +172,11 @@ class BaseExportMixin(BaseImportExportMixin):
     #: See :ref:`import_export_skip_admin_action_export_ui`.
     skip_export_form_from_action = False
 
+    #: If enabled, export action form validation does not validate
+    #: ``export_items`` against all model PKs. Posted IDs are accepted and
+    #: filtered through the export queryset as usual.
+    skip_export_action_selected_items_validation = False
+
     def get_export_formats(self):
         """
         Returns available export formats.
@@ -254,6 +259,16 @@ class BaseExportMixin(BaseImportExportMixin):
         return (
             getattr(settings, "IMPORT_EXPORT_SKIP_ADMIN_ACTION_EXPORT_UI", False)
             or self.skip_export_form_from_action is True
+        )
+
+    def is_skip_export_action_selected_items_validation_enabled(self):
+        return (
+            getattr(
+                settings,
+                "IMPORT_EXPORT_SKIP_ADMIN_ACTION_EXPORT_ITEMS_VALIDATION",
+                False,
+            )
+            or self.skip_export_action_selected_items_validation is True
         )
 
 

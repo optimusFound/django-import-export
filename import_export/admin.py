@@ -757,10 +757,15 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         if request.POST and "export_items" in request.POST:
             # this field is instantiated if the export is POSTed from the
             # 'action' drop down
+            if self.is_skip_export_action_selected_items_validation_enabled():
+                posted_export_items = request.POST.getlist("export_items")
+                choices = [(pk, pk) for pk in posted_export_items]
+            else:
+                choices = [(pk, pk) for pk in self.get_valid_export_item_pks(request)]
             form.fields["export_items"] = MultipleChoiceField(
                 widget=MultipleHiddenInput,
                 required=False,
-                choices=[(pk, pk) for pk in self.get_valid_export_item_pks(request)],
+                choices=choices,
             )
         if form.is_valid():
             file_format = formats[int(form.cleaned_data["format"])]()
