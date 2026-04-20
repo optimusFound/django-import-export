@@ -261,16 +261,6 @@ class BaseExportMixin(BaseImportExportMixin):
             or self.skip_export_form_from_action is True
         )
 
-    def is_skip_export_action_selected_items_validation_enabled(self):
-        return (
-            getattr(
-                settings,
-                "IMPORT_EXPORT_SKIP_ADMIN_ACTION_EXPORT_ITEMS_VALIDATION",
-                False,
-            )
-            or self.skip_export_action_selected_items_validation is True
-        )
-
 
 class ExportViewMixin(BaseExportMixin):
     # Deprecated, and will be removed in a future release (see #1666)
